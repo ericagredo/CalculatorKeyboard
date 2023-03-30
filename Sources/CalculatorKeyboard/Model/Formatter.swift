@@ -47,8 +47,7 @@ private extension Formatter {
     }
     
     func localizeSeparator(_ string: String) -> String {
-        let localizedSeparator = formatter.locale.decimalSeparator ?? Constants.decimalSeparator
-        return string.replacingOccurrences(of: Constants.decimalSeparator, with: localizedSeparator)
+        return Locale.current.currencySymbol ?? "$" + string
     }
 }
 
