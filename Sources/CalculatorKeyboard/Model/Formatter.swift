@@ -46,7 +46,7 @@ private extension Formatter {
     }
     
     func localizeSeparator(_ string: String) -> String {
-        return Locale.current.currencySymbol ?? "$" + string
+        return (Locale.current.currencySymbol ?? "$") + string
     }
 }
 
