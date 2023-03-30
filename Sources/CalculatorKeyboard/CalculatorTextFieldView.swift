@@ -22,12 +22,13 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
         textField.onDecimalValueChange = { [unowned coordinator = context.coordinator] in
             coordinator.setDecimalValue($0)
         }
+        
+        textField.borderStyle = .roundedRect
         textField.delegate = context.coordinator
-        textField.font = textFieldConfig.font
+        textField.font = UIFont.preferredFont(forTextStyle: .body)
         textField.adjustsFontSizeToFitWidth = textFieldConfig.adjustsFontSizeToFitWidth
         textField.textAlignment = textFieldConfig.textAlignment
         textField.placeholder = textFieldConfig.placeholder
-        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textField
     }
 

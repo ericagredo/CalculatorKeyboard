@@ -11,7 +11,7 @@ final class Keyboard: UIView {
     private let buttonFactory: ButtonFactory
     private let calculatorPanel = UIView()
     private let outputSubject = PassthroughSubject<CalculatorInput, Never>()
-    
+    let textField: CalculatorTextField
     private lazy var calculatorButtons: [UIButton] = {
         var buttons = [UIButton]()
         buttons.append(buttonFactory.makeDivision())
@@ -70,8 +70,9 @@ final class Keyboard: UIView {
         return buttons
     }()
 
-    init(buttonFactory: ButtonFactory = ButtonFactory()) {
+    init(buttonFactory: ButtonFactory = ButtonFactory(), textField: CalculatorTextField) {
         self.buttonFactory = buttonFactory
+        self.textField = textField
         super.init(frame: .zero)
         configure()
     }
@@ -218,6 +219,7 @@ extension Keyboard {
     func equalAction() {
         UIDevice.current.playInputClick()
         outputSubject.send(.equals)
+        textField.resignFirstResponder()
     }
 }
 

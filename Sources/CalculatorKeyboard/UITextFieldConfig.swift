@@ -7,7 +7,7 @@ public struct UITextFieldConfig {
     let placeholder: String?
 
     public init(
-        font: UIFont = UIFont.preferredFont(forTextStyle: .title1),
+        font: UIFont = UIFont.preferredFont(forTextStyle: .body),
         adjustsFontSizeToFitWidth: Bool = true,
         textAlignment: NSTextAlignment = .left,
         placeholder: String? = "0"

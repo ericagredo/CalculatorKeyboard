@@ -18,11 +18,13 @@ public class CalculatorTextField: UITextField {
     public func setDecimalValue(_ value: Decimal?) {
         decimalValueInputSubject.send(value)
     }
+    
 
     public init() {
         super.init(frame: .zero)
-        let keyboard = Keyboard()
+        let keyboard = Keyboard(textField: self)
         inputView = keyboard
+        self.tag = 3
         let input = Transformer.Input(
             calculator: keyboard.output,
             decimalValue: decimalValueInputSubject.eraseToAnyPublisher()
