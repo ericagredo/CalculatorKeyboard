@@ -13,7 +13,7 @@ struct Formatter {
         formatter.alwaysShowsDecimalSeparator = false
         formatter.minimumFractionDigits = 0
         formatter.maximumFractionDigits = Constants.decimalScale
-        formatter.currencySymbol = ""
+        formatter.currencySymbol = Locale.current.currencySymbol
     }
 
     func string(from expression: Expression) -> String {
