@@ -30,6 +30,7 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
         textField.adjustsFontForContentSizeCategory = true
         textField.textAlignment = textFieldConfig.textAlignment
         textField.placeholder = textFieldConfig.placeholder
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textField
     }
 
