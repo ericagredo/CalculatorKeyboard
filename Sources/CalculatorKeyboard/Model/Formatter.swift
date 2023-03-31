@@ -26,13 +26,24 @@ struct Formatter {
         case let .lhsOperator(lhs, opt):
             text = formattedString(from: lhs) + opt.rawValue.padding()
         case let .lhsOperatorRhs(lhs, opt, rhs):
-            text = formattedString(from: lhs) + opt.rawValue.padding() + formattedString(from: rhs)
+            text = formattedString(from: lhs) + opt.rawValue.padding() + rightHandString(from: rhs)
         }
         return text
     }
 }
 
 private extension Formatter {
+    func rightHandString(from string: String) -> String {
+        if validator.isValidDecimalString(string) {
+            return string
+        }
+             
+        else {
+            return ""
+        }
+        
+    }
+    
     func formattedString(from string: String) -> String {
         guard validator.isValidDecimalString(string),
               let decimal = Decimal(string: string, locale: Constants.locale),
