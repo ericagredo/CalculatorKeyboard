@@ -27,6 +27,7 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
         textField.delegate = context.coordinator
         textField.font = UIFont.preferredFont(forTextStyle: .body)
         textField.adjustsFontSizeToFitWidth = textFieldConfig.adjustsFontSizeToFitWidth
+        textField.adjustsFontForContentSizeCategory = true
         textField.textAlignment = textFieldConfig.textAlignment
         textField.placeholder = textFieldConfig.placeholder
         return textField
