@@ -1,4 +1,4 @@
-enum Operator: String {
+public enum Operator: String {
     case addition = "+"
     case subtraction = "−"
     case multiplication = "×"

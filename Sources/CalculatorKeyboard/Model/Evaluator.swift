@@ -1,9 +1,13 @@
 import Foundation
+import Combine
 
 struct Evaluator {
+    let outputSubject = PassthroughSubject<InputResult, Never>()
+    
     func evaluate(_ expression: Expression) -> String? {
         switch expression {
         case .lhsOperatorRhs(let lhs, let opt, let rhs):
+            outputSubject.send(InputResult(operand: opt, num: Decimal(string: rhs, locale: Constants.locale) ?? 0.0))
             return evaluate(lhs: lhs, rhs: rhs, opt: opt)
         default:
             return nil

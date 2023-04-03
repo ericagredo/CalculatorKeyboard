@@ -1,24 +1,28 @@
 import SwiftUI
-
+import Combine
 public struct CalculatorTextFieldView: UIViewRepresentable {
 
     @Binding
     private var decimalValue: Decimal?
     private let textFieldConfig: UITextFieldConfig
     private let onFirstResponderChange: (Bool) -> Void
-
+    @Binding var input: InputResult
+    let textField = CalculatorTextField()
+    
     public init(
         decimalValue: Binding<Decimal?>,
+        inputResult: Binding<InputResult>,
         textFieldConfig: UITextFieldConfig = UITextFieldConfig(),
         onFirstResponderChange: @escaping (Bool) -> Void = { _ in }
     ) {
+        _input = inputResult
         _decimalValue = decimalValue
         self.textFieldConfig = textFieldConfig
         self.onFirstResponderChange = onFirstResponderChange
     }
 
     public func makeUIView(context: UIViewRepresentableContext<Self>) -> UITextField {
-        let textField = CalculatorTextField()
+        
         textField.onDecimalValueChange = { [unowned coordinator = context.coordinator] in
             coordinator.setDecimalValue($0)
         }
@@ -44,9 +48,13 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
 
     public class Coordinator: NSObject, UITextFieldDelegate {
         private let parent: CalculatorTextFieldView
-
+        private var subcriptions = Set<AnyCancellable>()
         init(_ parent: CalculatorTextFieldView) {
             self.parent = parent
+            parent.textField.evaluator.outputSubject.sink { val in
+                parent.input = val
+            }
+            .store(in: &subcriptions)
         }
 
         func setDecimalValue(_ value: Decimal?) {
@@ -61,5 +69,15 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
         public func textFieldDidEndEditing(_ textField: UITextField) {
             parent.onFirstResponderChange(false)
         }
+    }
+}
+
+public struct InputResult: Equatable {
+    var operand: Operator
+    var num: Decimal
+    
+    public init(operand: Operator, num: Decimal) {
+        self.operand = operand
+        self.num = num
     }
 }

@@ -2,9 +2,10 @@ import UIKit
 import Combine
 
 public class CalculatorTextField: UITextField {
+    let evaluator = Evaluator()
     private lazy var transformer: Transformer = {
         let validator = Validator()
-        let evaluator = Evaluator()
+        
         let formatter = Formatter(validator: validator)
         let reducer = Reducer(validator: validator, evaluator: evaluator)
         return Transformer(reducer: reducer, formatter: formatter)
