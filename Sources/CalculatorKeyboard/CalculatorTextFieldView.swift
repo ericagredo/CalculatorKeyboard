@@ -73,8 +73,8 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
 }
 
 public struct InputResult: Equatable {
-    var operand: Operator
-    var num: Decimal
+    public var operand: Operator
+    public var num: Decimal
     
     public init(operand: Operator, num: Decimal) {
         self.operand = operand
