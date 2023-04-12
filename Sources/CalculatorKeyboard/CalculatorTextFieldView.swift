@@ -7,7 +7,6 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
     private let textFieldConfig: UITextFieldConfig
     private let onFirstResponderChange: (Bool) -> Void
     @Binding var input: InputResult
-    let textField = CalculatorTextField()
     
     public init(
         decimalValue: Binding<Decimal?>,
@@ -22,11 +21,11 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
     }
 
     public func makeUIView(context: UIViewRepresentableContext<Self>) -> UITextField {
-        
+        let textField = CalculatorTextField()
         textField.onDecimalValueChange = { [unowned coordinator = context.coordinator] in
             coordinator.setDecimalValue($0)
         }
-        
+        context.coordinator.textField = textField
         textField.borderStyle = .roundedRect
         textField.delegate = context.coordinator
         textField.font = UIFont.preferredFont(forTextStyle: .body)
@@ -49,9 +48,24 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
     public class Coordinator: NSObject, UITextFieldDelegate {
         private let parent: CalculatorTextFieldView
         private var subcriptions = Set<AnyCancellable>()
+        
+        var textField: CalculatorTextField? {
+                willSet {
+                    // Remove any old subscriptions before assigning a new textField
+                    subcriptions.removeAll()
+                }
+                didSet {
+                    // Re-subscribe to the new textField
+                    textField?.evaluator.outputSubject.sink { val in
+                        self.parent.input = val
+                    }
+                    .store(in: &subcriptions)
+                }
+            }
+        
         init(_ parent: CalculatorTextFieldView) {
             self.parent = parent
-            parent.textField.evaluator.outputSubject.sink { val in
+            textField?.evaluator.outputSubject.sink { val in
                 parent.input = val
             }
             .store(in: &subcriptions)
