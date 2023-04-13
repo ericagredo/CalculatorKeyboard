@@ -25,6 +25,7 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
 
     public func makeUIView(context: UIViewRepresentableContext<Self>) -> UITextField {
         let textField = CalculatorTextField(evaluator: evaluator)
+        textField.tag = Int.random(in: 0..<Int.max)
         textField.onDecimalValueChange = { [unowned coordinator = context.coordinator] in
             coordinator.setDecimalValue($0)
         }
