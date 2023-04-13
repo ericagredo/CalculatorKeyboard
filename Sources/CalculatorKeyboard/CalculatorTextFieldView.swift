@@ -8,8 +8,9 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
     private let onFirstResponderChange: (Bool) -> Void
     @Binding var input: InputResult
     private let evaluator: Evaluator
-    
+    private let textFieldId: UUID
     public init(
+        textFieldId: UUID,
         decimalValue: Binding<Decimal?>,
         inputResult: Binding<InputResult>,
         textFieldConfig: UITextFieldConfig = UITextFieldConfig(),
@@ -21,11 +22,12 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
         self.textFieldConfig = textFieldConfig
         self.onFirstResponderChange = onFirstResponderChange
         self.evaluator = evaluator
+        self.textFieldId = textFieldId
     }
 
     public func makeUIView(context: UIViewRepresentableContext<Self>) -> UITextField {
         let textField = CalculatorTextField(evaluator: evaluator)
-        textField.tag = Int.random(in: 0..<Int.max)
+        textField.tag = textFieldId.hashValue
         textField.onDecimalValueChange = { [unowned coordinator = context.coordinator] in
             coordinator.setDecimalValue($0)
         }
