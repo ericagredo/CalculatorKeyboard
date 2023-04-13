@@ -2,7 +2,7 @@ import UIKit
 import Combine
 
 public class CalculatorTextField: UITextField {
-    let evaluator = Evaluator()
+    let evaluator: Evaluator
     private lazy var transformer: Transformer = {
         let validator = Validator()
         
@@ -21,7 +21,8 @@ public class CalculatorTextField: UITextField {
     }
     
 
-    public init() {
+    public init(evaluator: Evaluator) {
+        self.evaluator = evaluator
         super.init(frame: .zero)
         let keyboard = Keyboard(textField: self)
         inputView = keyboard

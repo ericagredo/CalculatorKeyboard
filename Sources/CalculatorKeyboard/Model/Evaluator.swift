@@ -1,10 +1,15 @@
 import Foundation
 import Combine
 
-struct Evaluator {
-    let outputSubject = PassthroughSubject<InputResult, Never>()
+public struct Evaluator {
     
-    func evaluate(_ expression: Expression) -> String? {
+    public init(){
+        
+    }
+    public let outputSubject = PassthroughSubject<InputResult, Never>()
+    
+    
+    public func evaluate(_ expression: Expression) -> String? {
         switch expression {
         case .lhsOperatorRhs(let lhs, let opt, let rhs):
             outputSubject.send(InputResult(operand: opt, num: Decimal(string: rhs, locale: Constants.locale) ?? 0.0))
@@ -15,8 +20,8 @@ struct Evaluator {
     }
 }
 
-private extension Evaluator {
-    func evaluate(lhs: String, rhs: String, opt: Operator) -> String? {
+extension Evaluator {
+    public func evaluate(lhs: String, rhs: String, opt: Operator) -> String? {
         guard let lhsDecimal = Decimal(string: lhs, locale: Constants.locale),
               let rhsDecimal = Decimal(string: rhs, locale: Constants.locale)
         else {
