@@ -1,25 +1,36 @@
 import SwiftUI
 import Combine
-public struct CalculatorTextFieldView<T: CalculatorTextFieldItem>: UIViewRepresentable {
-    @Binding var item: T
+public struct CalculatorTextFieldView: UIViewRepresentable {
+
+    @Binding
+    private var decimalValue: Decimal?
     private let textFieldConfig: UITextFieldConfig
     private let onFirstResponderChange: (Bool) -> Void
+    @Binding var input: InputResult
     private let evaluator: Evaluator
-
+    private let textFieldId: UUID
+    public let uuid: UUID
     public init(
-        item: Binding<T>,
+        textFieldId: UUID,
+        decimalValue: Binding<Decimal?>,
+        inputResult: Binding<InputResult>,
         textFieldConfig: UITextFieldConfig = UITextFieldConfig(),
         onFirstResponderChange: @escaping (Bool) -> Void = { _ in },
         evaluator: Evaluator = Evaluator()
     ) {
-        _item = item
+        _input = inputResult
+        _decimalValue = decimalValue
         self.textFieldConfig = textFieldConfig
         self.onFirstResponderChange = onFirstResponderChange
         self.evaluator = evaluator
+        self.textFieldId = textFieldId
+        self.uuid = textFieldId
     }
 
     public func makeUIView(context: UIViewRepresentableContext<Self>) -> UITextField {
         let textField = CalculatorTextField(evaluator: evaluator)
+        textField.tag = textFieldId.hashValue
+        textField.accessibilityIdentifier = uuid.uuidString
         textField.onDecimalValueChange = { [unowned coordinator = context.coordinator] in
             coordinator.setDecimalValue($0)
         }
@@ -36,7 +47,7 @@ public struct CalculatorTextFieldView<T: CalculatorTextFieldItem>: UIViewReprese
     }
 
     public func updateUIView(_ uiView: UITextField, context: Context) {
-        (uiView as? CalculatorTextField)?.setDecimalValue(item.value)
+        (uiView as? CalculatorTextField)?.setDecimalValue(decimalValue)
     }
 
     public func makeCoordinator() -> Self.Coordinator {
@@ -48,27 +59,29 @@ public struct CalculatorTextFieldView<T: CalculatorTextFieldItem>: UIViewReprese
         private var subcriptions = Set<AnyCancellable>()
         
         var textField: CalculatorTextField? {
-            willSet {
-                subcriptions.removeAll()
-            }
-            didSet {
-                textField?.evaluator.outputSubject.sink { val in
-                    self.parent.item.inputResult = val
+                willSet {
+                    // Remove any old subscriptions before assigning a new textField
+                    subcriptions.removeAll()
                 }
-                .store(in: &subcriptions)
+                didSet {
+                    // Re-subscribe to the new textField
+                    textField?.evaluator.outputSubject.sink { val in
+                        self.parent.input = val
+                    }
+                    .store(in: &subcriptions)
+                }
             }
-        }
         
         init(_ parent: CalculatorTextFieldView) {
             self.parent = parent
             textField?.evaluator.outputSubject.sink { val in
-                parent.item.inputResult = val
+                parent.input = val
             }
             .store(in: &subcriptions)
         }
 
         func setDecimalValue(_ value: Decimal?) {
-            parent.item.value = value
+            parent.decimalValue = value
         }
 
         // MARK: UITextFieldDelegate
@@ -82,7 +95,6 @@ public struct CalculatorTextFieldView<T: CalculatorTextFieldItem>: UIViewReprese
     }
 }
 
-
 public struct InputResult: Equatable {
     public var operand: Operator
     public var num: Decimal
@@ -92,9 +104,3 @@ public struct InputResult: Equatable {
         self.num = num
     }
 }
-
-public protocol CalculatorTextFieldItem {
-    var value: Decimal? { get set }
-    var inputResult: InputResult { get set }
-}
-
