@@ -48,6 +48,7 @@ public struct CalculatorTextFieldView: UIViewRepresentable {
 
     public func updateUIView(_ uiView: UITextField, context: Context) {
         (uiView as? CalculatorTextField)?.setDecimalValue(decimalValue)
+        uiView.reloadInputViews()
     }
 
     public func makeCoordinator() -> Self.Coordinator {
